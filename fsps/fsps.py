@@ -9,7 +9,6 @@ __all__ = ["StellarPopulation"]
 import os
 import numpy as np
 from ._fsps import driver
-from .filters import FILTERS
 
 
 class StellarPopulation(object):
@@ -545,7 +544,8 @@ class StellarPopulation(object):
             self._ssp_ages = driver.get_timefull(NTFULL)
         return self._ssp_ages
 
-    def get_mags(self, zmet=None, tage=0.0, redshift=0.0, bands=None):
+    def get_mags(self, zmet=None, tage=0.0, redshift=0.0, bands=None,
+                 filter_dict = None):
         """
         Get the magnitude of the CSP.
 
@@ -566,6 +566,14 @@ class StellarPopulation(object):
             magnitude for. This should correspond to the result of
             :func:`fsps.find_filter`.
 
+        :param filter_dict: (default: None)
+            A dictionary of filter keys, where each value should be an
+            object with an `index` attribute corresponding to the one
+            based order of the filter in the `alt_filter_file`.  If
+            None then use the dictionary of deafualt filters.  Should
+            onlybe specified if alt_filter_file has been specified in
+            FSPS
+
         :returns mags:
             The magnitude grid. If an age was was provided by the ``tage``
             parameter then the result is a 1D array with ``NBANDS`` values.
@@ -575,6 +583,8 @@ class StellarPopulation(object):
             to the ``bands`` argument.
 
         """
+        from .filters import FILTERS
+
         self.params["tage"] = tage
         if zmet is not None:
             self.params["zmet"] = zmet
@@ -585,9 +595,11 @@ class StellarPopulation(object):
         NTFULL = driver.get_ntfull()
         NBANDS = driver.get_nbands()
 
+        if filter_dict is None:
+            filter_dict = FILTERS
         band_array = np.ones(NBANDS, dtype=bool)
         if bands is not None:
-            user_sorted_inds = np.array([FILTERS[band.lower()].index
+            user_sorted_inds = np.array([filter_dict[band.lower()].index
                                          for band in bands])
             band_array[np.array([i not in user_sorted_inds
                                  for i in range(NBANDS)],
