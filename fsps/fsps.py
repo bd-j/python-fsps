@@ -544,6 +544,15 @@ class StellarPopulation(object):
             self._ssp_ages = driver.get_timefull(NTFULL)
         return self._ssp_ages
 
+
+    def filter_data(self):
+        """Return effective wavelengths, and vega and solar magnitudes
+        of all filters.
+        """
+        NBANDS = driver.get_nbands()
+        lambda_eff, magvega, magsun = driver.get_filter_data(NBANDS)
+        return lambda_eff, magvega, magsun
+    
     def get_mags(self, zmet=None, tage=0.0, redshift=0.0, bands=None,
                  filter_dict = None):
         """
