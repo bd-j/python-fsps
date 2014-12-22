@@ -29,8 +29,7 @@ except KeyError:
     raise ImportError("You need to have the SPS_HOME environment variable")
 
 # Check the SVN revision number.
-ACCEPTED_FSPS_REVISIONS = [172, 173, 174, 175, 177, 178, 181, 183, 185]
-cmd = ["svnversion", ev]
+ACCEPTED_FSPS_REVISIONS = [178]
 stat, out = run_command(" ".join(cmd))
 fsps_vers = int(re.match("^([0-9])+", out[0]).group(0))
 
