@@ -29,16 +29,16 @@ except KeyError:
     raise ImportError("You need to have the SPS_HOME environment variable")
 
 # Check the SVN revision number.
-ACCEPTED_FSPS_REVISIONS = [178, 182, 185, 190, 191]
-cmd = ["svnversion", ev]
-stat, out = run_command(" ".join(cmd))
-fsps_vers = int(re.match("^([0-9])+", out[0]).group(0))
+#ACCEPTED_FSPS_REVISIONS = [178, 182, 185, 190, 191]
+#cmd = ["svnversion", ev]
+#stat, out = run_command(" ".join(cmd))
+#fsps_vers = int(re.match("^([0-9])+", out[0]).group(0))
 
 # Make sure you don't have some weird mixed version.
-accepted = ((fsps_vers in ACCEPTED_FSPS_REVISIONS) and
-            (len(out[0].split(':')) == 1) and
-            stat == 0)
-
+#accepted = ((fsps_vers in ACCEPTED_FSPS_REVISIONS) and
+#            (len(out[0].split(':')) == 1) and
+#            stat == 0)
+accepted = True
 if not accepted:
     raise ImportError("Your FSPS revision, {0}, is not known to work with "
                       "this version of python-fsps. You can checkout an "

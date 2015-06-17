@@ -360,17 +360,17 @@ contains
 
   end subroutine
 
-  subroutine stellar_spectrum(ns,mact,logt,lbol,logg,phase,ffco,spec_out)
+  subroutine stellar_spectrum(ns,mact,logt,lbol,logg,phase,ffco,wght,spec_out)
     
     ! Get a stellar spectrum for a given set of parameters
     
     implicit none
     integer :: i
     integer, intent(in) :: ns
-    double precision, intent(in) :: mact, logt, lbol, logg, phase, ffco
+    double precision, intent(in) :: mact, logt, lbol, logg, phase, ffco, wght
     double precision, dimension(ns), intent(inout) :: spec_out
 
-    call getspec(pset,mact,logt,lbol,logg,phase,ffco,spec_out)
+    call getspec(pset,mact,logt,lbol,logg,phase,ffco,wght,spec_out)
     
   end subroutine 
   
@@ -504,50 +504,6 @@ contains
       sfr(i)      = ocompsp(i)%sfr
       mdust(i)    = ocompsp(i)%mdust
     enddo
-
-  end subroutine
-
-  subroutine get_isochrone(zz,tt,n_mass,n_mags,time_out,z_out,&
-                           mass_init_out,logl_out,logt_out,logg_out,&
-                           ffco_out,phase_out,wght_out,mags_out)
-
-    implicit none
-
-    integer, intent(in) :: zz,tt,n_mass,n_mags
-    double precision, intent(out) :: time_out, z_out
-    double precision, dimension(n_mass), intent(out) :: mass_init_out
-    double precision, dimension(n_mass), intent(out) :: logl_out
-    double precision, dimension(n_mass), intent(out) :: logt_out
-    double precision, dimension(n_mass), intent(out) :: logg_out
-    double precision, dimension(n_mass), intent(out) :: ffco_out
-    double precision, dimension(n_mass), intent(out) :: phase_out
-    double precision, dimension(n_mass), intent(out) :: wght_out
-    double precision, dimension(n_mass, n_mags), intent(out) :: mags_out
-    integer :: i
-    double precision, dimension(nm) :: wght
-    double precision, dimension(nspec)  :: spec
-    double precision, dimension(nbands) :: mags
-
-    call imf_weight(mini_isoc(zz,tt,:), wght, nmass_isoc(zz,tt))
-    do i = 1, nmass_isoc(zz,tt)
-    ! Compute mags on isochrone at this mass
-       call getspec(pset, mact_isoc(zz,tt,i), &
-            logt_isoc(zz,tt,i), 10**logl_isoc(zz,tt,i), logg_isoc(zz,tt,i), &
-            phase_isoc(zz,tt,i), ffco_isoc(zz,tt,i), spec)
-       call getmags(0.d0, spec, mags)
-       mass_init_out(i) = mini_isoc(zz,tt,i)
-       logl_out(i) = logl_isoc(zz,tt,i)
-       logt_out(i) = logt_isoc(zz,tt,i)
-       logg_out(i) = logg_isoc(zz,tt,i)
-       ffco_out(i) = ffco_isoc(zz,tt,i)
-       phase_out(i) = phase_isoc(zz,tt,i)
-       wght_out(i) = wght(i)
-       mags_out(i,:) = mags(:)
-    end do
-
-    ! Fill in time and metallicity of this isochrone
-    time_out = timestep_isoc(zz, tt)
-    z_out = log10(zlegend(zz) / 0.0190) ! log(Z/Zsolar)
 
   end subroutine
 

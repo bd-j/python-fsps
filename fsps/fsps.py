@@ -760,7 +760,7 @@ class StellarPopulation(object):
         return outspec
 
     def get_starspec(self, mact, logt, lbol, logg, phase, comp,
-                     zmet=None, peraa=True):
+                     weight=1, zmet=None, peraa=True):
         """Get the spectrum of a star with a given set of physical
         parameters.  This uses the metallicity given by the
         current value of ``zmet``.
@@ -794,7 +794,7 @@ class StellarPopulation(object):
 
         NSPEC = driver.get_nspec()
         outspec = np.zeros(NSPEC)
-        driver.stellar_spectrum(mact, logt, lbol, logg, phase, comp, outspec)
+        driver.stellar_spectrum(mact, logt, lbol, logg, phase, comp, weight, outspec)
         if peraa:
             wavegrid = self.wavelengths
             factor = 3e18 / wavegrid ** 2
