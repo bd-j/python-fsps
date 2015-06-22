@@ -18,8 +18,9 @@ def run_command(cmd):
     child = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE,
                              stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     out = [s for s in child.stdout]
+    err = [s for s in child.stderr]
     w = child.wait()
-    return os.WEXITSTATUS(w), out
+    return os.WEXITSTATUS(w), out, err
 
 # Check to make sure that the required environment variable is present.
 try:
