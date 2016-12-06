@@ -184,7 +184,7 @@ def test_csp_sfh(reference_in=None, reference_out=None):
                                     axis=1)
 
     nrows=2;ncols=2
-    fig, ax = pl.subplots(nrows=nrows, ncols=ncols,sharex=True)
+    fig, ax = pl.subplots(nrows=nrows, ncols=ncols,sharex=True,figsize=(15,15))
     ax[0][0].set_ylim((25,0))
     ax[0][1].set_ylim((25,0))
     ax[1][0].set_ylim((25,0))
@@ -192,12 +192,12 @@ def test_csp_sfh(reference_in=None, reference_out=None):
 
     for row in range(nrows):
         for col in range(ncols):
-            ax[row][col].set_ylabel(propname[(nrows*row+col)])
-            ax[row][col].set_xlabel('Log Age[yrs]')
+            ax[row][col].set_ylabel(propname[(nrows*row+col)],fontsize=18)
+            ax[row][col].set_xlabel('Log Age[yrs]',fontsize=18)
             for sfh in prop.keys():
                 ax[row][col].plot(ages, prop[sfh][:,(nrows*row+col)],c=color[sfh],label=sfh,linewidth=2)
 
-    ax[row][col].legend(loc=4)
+    ax[row][col].legend(loc=4,fontsize=18)
     
     # Here we compare to an old set of values stored in an hdf5 file
     if reference_in is not None:
