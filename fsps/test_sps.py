@@ -39,15 +39,15 @@ def compare_reference(ref_in, current):
         stellar_mass, etc.)
     """
     ref_libs = json.loads(ref_in.attrs['libraries'])
-    assert ref_libs == libs
+    #assert ref_libs == libs
 
     diffstring = ("The maximum difference from the reference quantities "
                   "is {:4.5f} percent in the quantity {}")
     maxdiff, maxdq = 0, 'ANY'
     for k, v in current.items():
-        diff = np.atleast_1d(v /ref_in[v]  - 1)  # percent difference
+        diff = np.atleast_1d(v /ref_in[k]  - 1).flatten()  # percent difference
         maxdind = np.argmax(np.abs(diff))
-        if diff[maxdind] > maxdiff:
+        if np.abs(diff[maxdind]) > maxdiff:
             maxdiff = diff[maxdind]
             maxdq = k
 
