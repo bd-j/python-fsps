@@ -39,7 +39,8 @@ def compare_reference_iso(ref_in, current):
         Dictionary of calculated values that you want to compare to the old
         version. These correspond to the J,H,K,I,V,B magnitudes.
         
-    Beware: the active isochrone model and the input value isochrone model must be the same for any useful comparison!
+    Beware: the active isochrone model and the input value isochrone model
+    must be the same for any useful comparison!
     """
     ref_libs = json.loads(ref_in.attrs['libraries'])
     for i in range(2):
@@ -82,14 +83,16 @@ def test_ssp_iso_color(reference_in=None, reference_out=None):
     We use the MIST, BaSTI, and Padova (the one currently implemented in 
     python-fsps, not the modified version referenced in Conroy & Gunn (2010))
     isochrone models. 
-    NOTE: Because changing between different isochrone models requires recompiling FSPS and re-installing python-fsps, we wrote this method to 
+    NOTE: Because changing between different isochrone models requires
+    recompiling FSPS and re-installing python-fsps, we wrote this method to
     compute SSP colors for only ONE isochrone model (the active model). The 
     other two models (the passive models) are provided from a benchmark run on 
     12/06/2016.
     The current version of this method assumes that the active model is MIST 
     and the passive models are BaSTI and Padova. All isochrone models assume 
     that the spectral library is BaSEL. 
-    NOTE: We leave it to the user to change FSPS libraries to match our active model assumption or to change the active model to suit their needs. Since
+    NOTE: We leave it to the user to change FSPS libraries to match our active
+    model assumption or to change the active model to suit their needs. Since
     reference_out outputs only the information from the active model, name 
     your file appropriately!
     
