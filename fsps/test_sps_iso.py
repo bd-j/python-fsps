@@ -37,37 +37,45 @@ def compare_reference_iso(ref_in, current):
         h5py.File object with keys matching those in the given dictionary of values.
     :param current:
         Dictionary of calculated values that you want to compare to the old
-        version. These correspond to the J,H,K,I,V,B magnitudes.
+        version. These correspond to the J,H,K,I,V,B magnitudes and the ages
+        at which the magnitudes are computed.
         
-    Beware: the active isochrone model and the input value isochrone model
-    must be the same for any useful comparison!
+    Beware: the active isochrone model and the input value isochrone model must be the same for any useful comparison!
     """
     ref_libs = json.loads(ref_in.attrs['libraries'])
     for i in range(2):
         assert ref_libs[i] == libs[i]
 
-    J1 = np.asarray(ref_in.get('d0/J'))
-    H1 = np.asarray(ref_in.get('d0/H'))
-    K1 = np.asarray(ref_in.get('d0/K'))
-    I1 = np.asarray(ref_in.get('d0/I'))
-    V1 = np.asarray(ref_in.get('d0/V'))
-    B1 = np.asarray(ref_in.get('d0/B'))
-    Ages1 = np.asarray(ref_in.get('t0/Ages'))
-    
-    Jdiff = current['J'] - J1
-    Hdiff = current['H'] - H1
-    Kdiff = current['K'] - K1
-    Idiff = current['I'] - I1
-    Vdiff = current['V'] - V1
-    Bdiff = current['B'] - B1
-    
-    BVdiff = (current['B']-current['V']) - (B1-V1)
-    VIdiff = (current['V']-current['I']) - (V1-I1)
-    VKdiff = (current['V']-current['K']) - (V1-K1)
-    JHdiff = (current['J']-current['H']) - (J1-H1)
-    JKdiff = (current['J']-current['K']) - (J1-K1)
-    HKdiff = (current['H']-current['K']) - (H1-K1)
+    # create empty arrays to store data
+    data_in = np.zeros((len(ref_in['d0'].keys())+1, \
+        len(np.asarray(ref_in.get('t0/Ages')))))
+    data_c = np.zeros((len(current.keys())+1, \
+        len(current['Ages'])))
 
+    # populate with ages
+    data_in[0,:] = np.asarray(ref_in.get('t0/Ages'))
+    data_c[0,:] = current['Ages']
+    
+    # sort keys
+    sorted_keys = current.keys()
+    sorted_keys.remove('Ages')
+    sorted_keys.sort()
+    # populate with magnitudes
+    for i, key in enumerate(sorted_keys):
+        data_in[i+1,:] = np.asarray(ref_in.get('d0/%s'%key))
+        data_c[i+1,:] = current[key]
+
+    # compute color difference between current and input
+    BVdiff = (data_c[1,:]-data_c[6,:]) - (data_in[1,:]-data_in[6,:])
+    VIdiff = (data_c[6,:]-data_c[3,:]) - (data_in[6,:]-data_in[3,:])
+    VKdiff = (data_c[6,:]-data_c[5,:]) - (data_in[6,:]-data_in[5,:])
+    JHdiff = (data_c[4,:]-data_c[2,:]) - (data_in[4,:]-data_in[2,:])
+    JKdiff = (data_c[4,:]-data_c[5,:]) - (data_in[4,:]-data_in[5,:])
+    HKdiff = (data_c[2,:]-data_c[5,:]) - (data_in[2,:]-data_in[5,:])
+
+    #colordiffset = np.asarray(BVdiff, VIdiff, VKdiff, JHdiff, JKdiff, HKdiff)
+    
+    
     print('max B-V difference (input vs. current) = ' + str(np.max(np.abs(BVdiff))))
     print('max V-I difference (input vs. current) = ' + str(np.max(np.abs(VIdiff))))
     print('max V-K difference (input vs. current) = ' + str(np.max(np.abs(VKdiff))))
@@ -75,7 +83,7 @@ def compare_reference_iso(ref_in, current):
     print('max J-K difference (input vs. current) = ' + str(np.max(np.abs(JKdiff))))
     print('max H-K difference (input vs. current) = ' + str(np.max(np.abs(HKdiff))))
     
-
+    #return data_in, data_c, diffset, colordiffset
         
 def test_ssp_iso_color(reference_in=None, reference_out=None):
     """This method will generate a plot of SSP colors as a function of age for
@@ -83,16 +91,14 @@ def test_ssp_iso_color(reference_in=None, reference_out=None):
     We use the MIST, BaSTI, and Padova (the one currently implemented in 
     python-fsps, not the modified version referenced in Conroy & Gunn (2010))
     isochrone models. 
-    NOTE: Because changing between different isochrone models requires
-    recompiling FSPS and re-installing python-fsps, we wrote this method to
+    NOTE: Because changing between different isochrone models requires recompiling FSPS and re-installing python-fsps, we wrote this method to 
     compute SSP colors for only ONE isochrone model (the active model). The 
     other two models (the passive models) are provided from a benchmark run on 
     12/06/2016.
     The current version of this method assumes that the active model is MIST 
     and the passive models are BaSTI and Padova. All isochrone models assume 
     that the spectral library is BaSEL. 
-    NOTE: We leave it to the user to change FSPS libraries to match our active
-    model assumption or to change the active model to suit their needs. Since
+    NOTE: We leave it to the user to change FSPS libraries to match our active model assumption or to change the active model to suit their needs. Since
     reference_out outputs only the information from the active model, name 
     your file appropriately!
     
@@ -117,39 +123,30 @@ def test_ssp_iso_color(reference_in=None, reference_out=None):
     # Conroy & Gunn (2010) only provide metallicities at 7 ages, so we will do
     # some interpolation - before 1 Gyr, metallicity is constant; after 1 Gyr,
     # we assume do a linear interpolation
-    met_inter = np.interp(np.linspace(9.1, 10.1, num=21), [9.0, 9.5, 9.8, 10.1], [-0.28, -0.38, -0.68, -1.5])
+    met_inter = np.interp(np.linspace(9.1, 10.1, num=21), \
+        [9.0, 9.5, 9.8, 10.1], [-0.28, -0.38, -0.68, -1.5])
     # Full ages and metallicity arrays here
-    logage_act = np.concatenate((np.linspace(7.5, 9.05, num=32), np.linspace(9.1, 10.1, num=21)))
+    logage_act = np.concatenate((np.linspace(7.5, 9.05, num=32), \
+        np.linspace(9.1, 10.1, num=21)))
     met = np.concatenate((np.ones(32)*(-0.28), met_inter))
     # Magnitude bands
     bands = ['b','v','cousins_i','2mass_j','2mass_ks','2mass_h']
     # Initialize some arrays to store the different bands
-    size = len(logage_act)
-    B_act = np.empty(size)
-    V_act = np.empty(size)
-    I_act = np.empty(size)
-    J_act = np.empty(size)
-    K_act = np.empty(size)
-    H_act = np.empty(size)
+    t_size = len(logage_act)
+    colors_act = np.empty([len(bands), t_size])
     # Now compute the magnitudes
     print("Computing magnitudes for {} isochrones. This might take a while!".format(active_model))
-    for i in range(size):
+    for i in range(t_size):
         pop.params['logzsol'] = met[i]
-        mags = pop.get_mags(tage=10**(logage_act[i]-9), bands=bands)
-        B_act[i] = mags[0]
-        V_act[i] = mags[1]
-        I_act[i] = mags[2]
-        J_act[i] = mags[3]
-        K_act[i] = mags[4]
-        H_act[i] = mags[5]
+        colors_act[:,i] = pop.get_mags(tage=10**(logage_act[i]-9), bands=bands)
 
     # Make figures and an output structure
     # The output structure 
     fig, axarr = pl.subplots(3,2,figsize=(3.2*2*1.5*0.9, 2.8*3*1.5*0.8))
     # Colors and linestyles
     models = {'MIST': {'color':'b', 'linestyle':'-', 'dashes':[8, 4, 2, 4]}, 
-    'Padova': {'color':'k', 'linestyle':'-'}, 
-    'BaSTI':{'color':'r', 'linestyle':'--'}}
+              'Padova': {'color':'k', 'linestyle':'-'}, 
+              'BaSTI':{'color':'r', 'linestyle':'--'}}
     # Get the passive models data from our benchmark file
     dir = os.path.dirname(__file__)
     bench_path = os.path.join(dir, 'benchmark_iso_color.hdf5')
@@ -157,37 +154,35 @@ def test_ssp_iso_color(reference_in=None, reference_out=None):
     # Plot all the things!
     print('Generating plots')
     for model in models.keys():
+        temp_plot = np.empty([len(bands)+1, t_size])
         if model != active_model:
             # get data for passive models
-            J = np.asarray(f.get(model+'/d0/J'))
-            H = np.asarray(f.get(model+'/d0/H'))
-            K = np.asarray(f.get(model+'/d0/K'))
-            I = np.asarray(f.get(model+'/d0/I'))
-            V = np.asarray(f.get(model+'/d0/V'))
-            B = np.asarray(f.get(model+'/d0/B'))
-            logage = np.asarray(f.get(model+'/t0/Ages'))
+            temp_plot[0,:] = np.asarray(f.get(model+'/t0/Ages'))
+            for i, key in enumerate(['B', 'V', 'I', 'J', 'K', 'H']):
+                temp_plot[i+1,:] = np.asarray(f.get(model+'/d0/%s'%key))
         else:
             # get data for active model
-            J = J_act
-            H = H_act
-            K = K_act
-            I = I_act
-            V = V_act
-            B = B_act
-            logage = logage_act
+            temp_plot[0,:] = logage_act
+            for i in range(len(bands)):
+                temp_plot[i+1,:] = colors_act[i,:]
         # plotting
-        axarr[0,0].plot(logage, B-V, lw=2, **models[model])
-        axarr[0,0].set_ylabel(r'${\rm B-V}$', fontsize=13)
-        axarr[0,1].plot(logage, V-I, label='FSPS + '+model, lw=2, \
+        axarr[0,0].plot(temp_plot[0,:], temp_plot[1,:]-temp_plot[2,:], lw=2, \
             **models[model])
+        axarr[0,0].set_ylabel(r'${\rm B-V}$', fontsize=13)
+        axarr[0,1].plot(temp_plot[0,:], temp_plot[2,:]-temp_plot[3,:], \
+            label='FSPS + {}'.format(model), lw=2, **models[model])
         axarr[0,1].set_ylabel(r'${\rm V-I}$', fontsize=13)
-        axarr[1,0].plot(logage, V-K, lw=2, **models[model])
+        axarr[1,0].plot(temp_plot[0,:], temp_plot[2,:]-temp_plot[5,:], lw=2, \
+            **models[model])
         axarr[1,0].set_ylabel(r'${\rm V-K}$', fontsize=13)
-        axarr[1,1].plot(logage, J-H, lw=2, **models[model])
+        axarr[1,1].plot(temp_plot[0,:], temp_plot[4,:]-temp_plot[6,:], lw=2, \
+            **models[model])
         axarr[1,1].set_ylabel(r'${\rm J-H}$', fontsize=13)
-        axarr[2,0].plot(logage, J-K, lw=2, **models[model])
+        axarr[2,0].plot(temp_plot[0,:], temp_plot[4,:]-temp_plot[5,:], lw=2, \
+            **models[model])
         axarr[2,0].set_ylabel(r'${\rm J-K}$', fontsize=13)
-        axarr[2,1].plot(logage, H-K, lw=2, **models[model])
+        axarr[2,1].plot(temp_plot[0,:], temp_plot[6,:]-temp_plot[5,:], lw=2, \
+            **models[model])
         axarr[2,1].set_ylabel(r'${\rm H-K}$', fontsize=13)
         
     #Plot beautification here
@@ -216,12 +211,12 @@ def test_ssp_iso_color(reference_in=None, reference_out=None):
     pl.setp(ltext, fontname='Times New Roman')
     pl.tight_layout()
        
-    current = {'B': B_act,
-               'V': V_act,
-               'I': I_act,
-               'J': J_act,
-               'K': K_act,
-               'H': H_act,
+    current = {'B': colors_act[0,:],
+               'V': colors_act[1,:],
+               'I': colors_act[2,:],
+               'J': colors_act[3,:],
+               'K': colors_act[4,:],
+               'H': colors_act[5,:],
                'Ages': logage_act}
 
     # Here we compare to an old set of values stored in a benchmark hdf5 file
@@ -240,14 +235,11 @@ def test_ssp_iso_color(reference_in=None, reference_out=None):
         timestamp = 'T'.join(str(datetime.datetime.now()).split())
         ref = h5py.File(reference_out, 'w')
         # write all the data!
-        ref['d0/J'] = current['J']
-        ref['d0/H'] = current['H']
-        ref['d0/K'] = current['K']
-        ref['d0/I'] = current['I']
-        ref['d0/V'] = current['V']
-        ref['d0/B'] = current['B']
+        for key in ['B', 'V', 'I', 'J', 'K', 'H']:
+            ref['d0/'+key] = current[key]
+            
         ref['d0'].attrs['units'] = 'mags'
-        ref['d0'].attrs['long_name'] = 'Filters J,H,K,I,V,B' 
+        ref['d0'].attrs['long_name'] = 'Filters B,V,I,J,K,H' 
         for key in ref['d0'].keys():
             ref['d0/%s'%key].attrs['units'] = 'mags'
             ref['d0/%s'%key].attrs['long_name'] = key+'-band magnitude'
