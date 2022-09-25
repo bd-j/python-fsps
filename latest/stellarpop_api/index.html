@@ -14,6 +14,7 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex/" />
     <link rel="search" title="Search" href="../search/" />
@@ -838,7 +839,35 @@ FSPS parameter <code class="docutils literal notranslate"><span class="pre">add_
 <li><a class="reference internal" href="#">Modelling Stellar Populations</a><ul>
 <li><a class="reference internal" href="#example">Example</a></li>
 <li><a class="reference internal" href="#example-using-nebular-emission">Example using nebular emission</a></li>
-<li><a class="reference internal" href="#api-reference">API Reference</a></li>
+<li><a class="reference internal" href="#api-reference">API Reference</a><ul>
+<li><a class="reference internal" href="#fsps.StellarPopulation"><code class="docutils literal notranslate"><span class="pre">StellarPopulation</span></code></a><ul>
+<li><a class="reference internal" href="#fsps.StellarPopulation.dust_mass"><code class="docutils literal notranslate"><span class="pre">StellarPopulation.dust_mass</span></code></a></li>
+<li><a class="reference internal" href="#fsps.StellarPopulation.duste_library"><code class="docutils literal notranslate"><span class="pre">StellarPopulation.duste_library</span></code></a></li>
+<li><a class="reference internal" href="#fsps.StellarPopulation.emline_luminosity"><code class="docutils literal notranslate"><span class="pre">StellarPopulation.emline_luminosity</span></code></a></li>
+<li><a class="reference internal" href="#fsps.StellarPopulation.emline_wavelengths"><code class="docutils literal notranslate"><span class="pre">StellarPopulation.emline_wavelengths</span></code></a></li>
+<li><a class="reference internal" href="#fsps.StellarPopulation.filter_data"><code class="docutils literal notranslate"><span class="pre">StellarPopulation.filter_data()</span></code></a></li>
+<li><a class="reference internal" href="#fsps.StellarPopulation.formed_mass"><code class="docutils literal notranslate"><span class="pre">StellarPopulation.formed_mass</span></code></a></li>
+<li><a class="reference internal" href="#fsps.StellarPopulation.get_mags"><code class="docutils literal notranslate"><span class="pre">StellarPopulation.get_mags()</span></code></a></li>
+<li><a class="reference internal" href="#fsps.StellarPopulation.get_spectrum"><code class="docutils literal notranslate"><span class="pre">StellarPopulation.get_spectrum()</span></code></a></li>
+<li><a class="reference internal" href="#fsps.StellarPopulation.isoc_library"><code class="docutils literal notranslate"><span class="pre">StellarPopulation.isoc_library</span></code></a></li>
+<li><a class="reference internal" href="#fsps.StellarPopulation.isochrones"><code class="docutils literal notranslate"><span class="pre">StellarPopulation.isochrones()</span></code></a></li>
+<li><a class="reference internal" href="#fsps.StellarPopulation.log_age"><code class="docutils literal notranslate"><span class="pre">StellarPopulation.log_age</span></code></a></li>
+<li><a class="reference internal" href="#fsps.StellarPopulation.log_lbol"><code class="docutils literal notranslate"><span class="pre">StellarPopulation.log_lbol</span></code></a></li>
+<li><a class="reference internal" href="#fsps.StellarPopulation.set_lsf"><code class="docutils literal notranslate"><span class="pre">StellarPopulation.set_lsf()</span></code></a></li>
+<li><a class="reference internal" href="#fsps.StellarPopulation.set_tabular_sfh"><code class="docutils literal notranslate"><span class="pre">StellarPopulation.set_tabular_sfh()</span></code></a></li>
+<li><a class="reference internal" href="#fsps.StellarPopulation.sfr"><code class="docutils literal notranslate"><span class="pre">StellarPopulation.sfr</span></code></a></li>
+<li><a class="reference internal" href="#fsps.StellarPopulation.sfr_avg"><code class="docutils literal notranslate"><span class="pre">StellarPopulation.sfr_avg()</span></code></a></li>
+<li><a class="reference internal" href="#fsps.StellarPopulation.smoothspec"><code class="docutils literal notranslate"><span class="pre">StellarPopulation.smoothspec()</span></code></a></li>
+<li><a class="reference internal" href="#fsps.StellarPopulation.solar_metallicity"><code class="docutils literal notranslate"><span class="pre">StellarPopulation.solar_metallicity</span></code></a></li>
+<li><a class="reference internal" href="#fsps.StellarPopulation.spec_library"><code class="docutils literal notranslate"><span class="pre">StellarPopulation.spec_library</span></code></a></li>
+<li><a class="reference internal" href="#fsps.StellarPopulation.ssp_ages"><code class="docutils literal notranslate"><span class="pre">StellarPopulation.ssp_ages</span></code></a></li>
+<li><a class="reference internal" href="#fsps.StellarPopulation.stellar_mass"><code class="docutils literal notranslate"><span class="pre">StellarPopulation.stellar_mass</span></code></a></li>
+<li><a class="reference internal" href="#fsps.StellarPopulation.wavelengths"><code class="docutils literal notranslate"><span class="pre">StellarPopulation.wavelengths</span></code></a></li>
+<li><a class="reference internal" href="#fsps.StellarPopulation.zlegend"><code class="docutils literal notranslate"><span class="pre">StellarPopulation.zlegend</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
