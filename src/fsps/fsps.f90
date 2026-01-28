@@ -316,6 +316,18 @@ contains
 
   end subroutine
 
+  subroutine get_csp_components(ns, csp1, csp2)
+
+    ! Return the unattenuated 'young' and 'old' stellar continuua
+
+    implicit none
+    integer, intent(in) :: ns
+    double precision, dimension(ns), intent(inout) :: csp1, csp2
+    csp1 = spec_young
+    csp2 = spec_old
+
+  end subroutine
+
 !  subroutine interp_ssp(ns,zpos,apos,tpos,spec,mass,lbol)
 
     ! Return the SSPs interpolated to the target metallicity
